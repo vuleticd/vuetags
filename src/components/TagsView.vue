@@ -38,15 +38,39 @@
       <div class="cell favourite center">My Favourites</div>
       <div class="cell actions center">Actions</div>
     </div>
-    <div v-for="(tag, index) in filteredTags" :key="tag.id" :class="['row', {'even': index % 2 == 0}]">
+    <div v-for="(tag, index) in currentPageTags" :key="tag.id" :class="['row', {'even': index % 2 == 0}]">
       <div class="cell id center">{{ tag.id }}</div>
       <div class="cell name">{{ tag.name }}</div>
       <div class="cell type">{{ tag.type }}</div>
-      <div :class="['cell', 'feed', 'center', {'ok': tag.feed}]" />
-      <div :class="['cell', 'favourite', 'center', {'ok': tag.favourite}]" />
+      <div :class="['cell', 'feed', 'center', {'ok': tag.feed}]">
+        <span v-if="tag.feed" class="icon-checkmark" />
+      </div>
+      <div :class="['cell', 'favourite', 'center', {'ok': tag.favourite}]">
+        <span v-if="tag.favourite" class="icon-checkmark" />
+      </div>
       <div class="cell actions center">
         <span class="icon-pencil" @click="showModal(tag.id)" />
         <span class="icon-cross" @click="deleteTag(tag.id)" />
+      </div>
+    </div>
+    <div class="tags-pagination">
+      <div class="tags-page-size">
+        <span>Show</span>
+        <select v-model="pageSize">
+          <option value="5">5</option>
+          <option value="10">10</option>
+          <option value="20">20</option>
+        </select>
+        <span>entries</span>
+      </div>
+      <div class="tags-navigation">
+        <div class="first" @click="goTo('first')"><span class="icon-first" /></div>
+        <div class="previous" @click="goTo('previous')"><span class="icon-previous2" /></div>
+        <div v-for="(pg, index) in getPagingRange" :key="index" :class="['page', {'current': pg === currentPage}]" @click="goTo(pg)">
+          {{pg}}
+        </div>
+        <div class="next" @click="goTo('next')"><span class="icon-next2" /></div>
+        <div class="last" @click="goTo('last')"><span class="icon-last" /></div>
       </div>
     </div>
   </div>
@@ -69,7 +93,7 @@ export default {
         feed: 2,
         favourite: 2
       },
-      pageSize: 10,
+      pageSize: 5,
       currentPage: 1
     };
   },
@@ -94,6 +118,40 @@ export default {
       }
       
       return collection;
+    },
+    numOfPages() {
+        return Math.ceil(this.filteredTags.length / this.pageSize);
+    },
+    onFirstPage() {
+        const n = this.filteredTags.length;
+        return ((n <= this.pageSize) || (this.currentPage == 1));
+    },
+    onLastPage() {
+        const n = this.filteredTags.length;
+        return ((n <= this.pageSize) || (this.currentPage == this.numOfPages));
+    },
+    currentPageTags() {
+      if(this.filteredTags.length <= this.pageSize) {
+          return this.filteredTags;
+      }
+      if(this.onFirstPage) {
+          return this.filteredTags.slice(0, this.pageSize);
+      }
+      if(this.onLastPage) {
+          return this.filteredTags.slice(-this.pageSize);
+      }
+
+      const start = (this.currentPage - 1) * this.pageSize;
+      return this.filteredTags.slice(start, start + this.pageSize);
+    },
+    getPagingRange({min = 1, length = 5} = {}) {
+      if (length > this.numOfPages) length = this.numOfPages;
+
+      let start = this.currentPage - Math.floor(length / 2);
+      start = Math.max(start, min);
+      start = Math.min(start, min + this.numOfPages - length);
+     
+      return Array.from({length: length}, (el, i) => start + i);
     }
   },
   methods: {
@@ -101,6 +159,31 @@ export default {
       'showModal',
       'deleteTag'
     ]),
+    goTo(page) {
+      switch(page) {
+        case 'first':
+          this.currentPage = 1;
+          break;
+        case 'next':
+          this.currentPage++;
+          if (this.currentPage > this.numOfPages) {
+            this.currentPage = this.numOfPages;
+          }
+          break;
+        case 'previous':
+          this.currentPage--;
+          if (this.currentPage < 1) {
+            this.currentPage = 1;
+          }
+          break;
+        case 'last':
+          this.currentPage = this.numOfPages;
+          break;
+        default:
+          this.currentPage = page;
+          break;
+      }
+    }
   }
 }
 </script>
@@ -125,7 +208,11 @@ export default {
 
   .cell {
     border: 1px solid #d2d2d2;
+    border-right: 0;
     flex: 1;
+    padding: 6px;
+    background-color: #ffffff;
+    display: flex;
 
     &.id {
       flex: 0.5;
@@ -149,6 +236,7 @@ export default {
 
     &.actions {
       flex: 0.5;
+      border-right: 1px solid #d2d2d2;
     }
   }
 
@@ -161,7 +249,10 @@ export default {
 
     input, select {
       width: 100%;
-      padding: 6px;
+      padding: 0;
+      border: 0;
+      outline: none;
+      overflow: hidden;
     }
   }
 
@@ -171,7 +262,6 @@ export default {
 
     .cell {
       border-top: 0;
-      padding: 6px 0;
 
       &.center {
         align-content: center;
@@ -192,7 +282,6 @@ export default {
 
     .cell {
       border-top: 0;
-      padding: 6px 0;
 
       &.center {
         align-content: center;
@@ -205,6 +294,43 @@ export default {
 
         span {
           cursor:pointer;
+        }
+      }
+    }
+  }
+
+  & .tags-pagination {
+    display: flex;
+    padding: 10px 0;
+
+    & .tags-page-size {
+      flex: 1;
+
+      & select {
+        margin: 0 5px;
+        padding: 6px;
+        border: 1px solid #d2d2d2;
+        outline: none;
+      }
+    }
+
+    & .tags-navigation {
+      display:flex;
+
+      & div {
+        margin: 0 2px;
+        padding: 6px 0;
+        background-color: #ffffff;
+        cursor: pointer;
+        width: 29px;
+        text-align: center;
+
+        &:hover {
+          background-color: #DDDDDD;
+        }
+
+        &.current {
+          background-color: #DDDDDD;
         }
       }
     }

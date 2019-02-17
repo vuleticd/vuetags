@@ -5,7 +5,168 @@ Vue.use(Vuex)
 
 export default new Vuex.Store({
   state: {
-    tags: [],
+    tags: [
+    {
+      "id": 1,
+      "name": "Gogol",
+      "feed": true,
+      "favourite": false,
+      "photo": "http://placehold.it/32x32",
+      "type": "brown"
+    },
+    {
+      "id": 2,
+      "name": "Plutorque",
+      "feed": true,
+      "favourite": true,
+      "photo": "http://placehold.it/32x32",
+      "type": "ehoo"
+    },
+    {
+      "id": 3,
+      "name": "Magneato",
+      "feed": true,
+      "favourite": true,
+      "photo": "http://placehold.it/32x32",
+      "type": "bar"
+    },
+    {
+      "id": 4,
+      "name": "Darwinium",
+      "feed": false,
+      "favourite": false,
+      "photo": "http://placehold.it/32x32",
+      "type": "green"
+    },
+    {
+      "id": 5,
+      "name": "Bostonic",
+      "feed": true,
+      "favourite": true,
+      "photo": "http://placehold.it/32x32",
+      "type": "blah"
+    },
+    {
+      "id": 6,
+      "name": "Prowaste",
+      "feed": false,
+      "favourite": true,
+      "photo": "http://placehold.it/32x32",
+      "type": "trace"
+    },
+    {
+      "id": 7,
+      "name": "Veraq",
+      "feed": true,
+      "favourite": true,
+      "photo": "http://placehold.it/32x32",
+      "type": "fc"
+    },
+    {
+      "id": 8,
+      "name": "Venoflex",
+      "feed": true,
+      "favourite": true,
+      "photo": "http://placehold.it/32x32",
+      "type": "bar"
+    },
+    {
+      "id": 9,
+      "name": "Emtrac",
+      "feed": false,
+      "favourite": false,
+      "photo": "http://placehold.it/32x32",
+      "type": "blah"
+    },
+    {
+      "id": 10,
+      "name": "Codact",
+      "feed": true,
+      "favourite": true,
+      "photo": "http://placehold.it/32x32",
+      "type": "hugo"
+    },
+    {
+      "id": 11,
+      "name": "Toyletry",
+      "feed": true,
+      "favourite": false,
+      "photo": "http://placehold.it/32x32",
+      "type": "foo"
+    },
+    {
+      "id": 12,
+      "name": "Zenthall",
+      "feed": true,
+      "favourite": false,
+      "photo": "http://placehold.it/32x32",
+      "type": "trace"
+    },
+    {
+      "id": 13,
+      "name": "Andryx",
+      "feed": false,
+      "favourite": true,
+      "photo": "http://placehold.it/32x32",
+      "type": "trace"
+    },
+    {
+      "id": 14,
+      "name": "Entality",
+      "feed": false,
+      "favourite": true,
+      "photo": "http://placehold.it/32x32",
+      "type": "brown"
+    },
+    {
+      "id": 15,
+      "name": "Playce",
+      "feed": false,
+      "favourite": false,
+      "photo": "http://placehold.it/32x32",
+      "type": "hugo"
+    },
+    {
+      "id": 16,
+      "name": "Musanpoly",
+      "feed": true,
+      "favourite": false,
+      "photo": "http://placehold.it/32x32",
+      "type": "ehoo"
+    },
+    {
+      "id": 17,
+      "name": "Biotica",
+      "feed": true,
+      "favourite": false,
+      "photo": "http://placehold.it/32x32",
+      "type": "trace"
+    },
+    {
+      "id": 18,
+      "name": "Poshome",
+      "feed": false,
+      "favourite": true,
+      "photo": "http://placehold.it/32x32",
+      "type": "apple"
+    },
+    {
+      "id": 19,
+      "name": "Combot",
+      "feed": false,
+      "favourite": false,
+      "photo": "http://placehold.it/32x32",
+      "type": "blah"
+    },
+    {
+      "id": 20,
+      "name": "Portica",
+      "feed": true,
+      "favourite": false,
+      "photo": "http://placehold.it/32x32",
+      "type": "fc"
+    }
+  ],
     types: [
       "Fudbalski klub",
       "Navijac"
