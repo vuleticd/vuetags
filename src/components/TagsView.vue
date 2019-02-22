@@ -6,13 +6,13 @@
     </div>
     <div class="toolbar">
       <div class="cell id">
-        <input type="text" v-model="filter.id" />
+        <input @focus="hideBackground" @blur="showBackground" type="text" v-model="filter.id" />
       </div>
       <div class="cell name">
-        <input type="text" v-model="filter.name" />
+        <input @focus="hideBackground" @blur="showBackground" type="text" v-model="filter.name" />
       </div>
       <div class="cell type">
-        <input type="text" v-model="filter.type" />
+        <input @focus="hideBackground" @blur="showBackground" type="text" v-model="filter.type" />
       </div>
       <div class="cell feed">
         <select v-model="filter.feed">
@@ -31,11 +31,60 @@
       <div class="cell actions" />    
     </div>
     <div class="header">
-      <div class="cell id center">Tag ID</div>
-      <div class="cell name">Tag Name</div>
-      <div class="cell type">Tag Type</div>
-      <div class="cell feed center">My Feed</div>
-      <div class="cell favourite center">My Favourites</div>
+      <div class="cell id center">Tag ID
+        <span
+          v-if="sorting.id !== 'desc'"
+          @click="toggleSort('id', 'asc')"
+          :class="['icon-play3', 'asc', {'active': sorting.id === 'asc'}]"/>
+        <span
+          v-if="sorting.id !== 'asc'"
+          @click="toggleSort('id', 'desc')"
+          :class="['icon-play3', 'desc', {'active': sorting.id === 'desc'}]"/>
+      </div>
+      <div class="cell name">
+        Tag Name
+        <span
+          v-if="sorting.name !== 'desc'"
+          @click="toggleSort('name', 'asc')"
+          :class="['icon-play3', 'asc', {'active': sorting.name === 'asc'}]"/>
+        <span
+          v-if="sorting.name !== 'asc'"
+          @click="toggleSort('name', 'desc')"
+          :class="['icon-play3', 'desc', {'active': sorting.name === 'desc'}]"/>
+      </div>
+      <div class="cell type">
+        Tag Type
+        <span
+          v-if="sorting.type !== 'desc'"
+          @click="toggleSort('type', 'asc')"
+          :class="['icon-play3', 'asc', {'active': sorting.type === 'asc'}]"/>
+        <span
+          v-if="sorting.type !== 'asc'"
+          @click="toggleSort('type', 'desc')"
+          :class="['icon-play3', 'desc', {'active': sorting.type === 'desc'}]"/>
+      </div>
+      <div class="cell feed center">
+        My Feed
+        <span
+          v-if="sorting.feed !== 'desc'"
+          @click="toggleSort('feed', 'asc')"
+          :class="['icon-play3', 'asc', {'active': sorting.feed === 'asc'}]"/>
+        <span
+          v-if="sorting.feed !== 'asc'"
+          @click="toggleSort('feed', 'desc')"
+          :class="['icon-play3', 'desc', {'active': sorting.feed === 'desc'}]"/>
+      </div>
+      <div class="cell favourite center">
+        My Favourites
+        <span
+          v-if="sorting.favourite !== 'desc'"
+          @click="toggleSort('favourite', 'asc')"
+          :class="['icon-play3', 'asc', {'active': sorting.favourite === 'asc'}]"/>
+        <span
+          v-if="sorting.favourite !== 'asc'"
+          @click="toggleSort('favourite', 'desc')"
+          :class="['icon-play3', 'desc', {'active': sorting.favourite === 'desc'}]"/>
+      </div>
       <div class="cell actions center">Actions</div>
     </div>
     <div v-for="(tag, index) in currentPageTags" :key="tag.id" :class="['row', {'even': index % 2 == 0}]">
@@ -93,6 +142,7 @@ export default {
         feed: 2,
         favourite: 2
       },
+      sorting: {},
       pageSize: 5,
       currentPage: 1
     };
@@ -115,8 +165,12 @@ export default {
         if (this.filter[prop] != '2') {
           collection = _.filter(collection, [prop, !!+this.filter[prop]]);
         }
-      }
+      } 
       
+      if (Object.keys(this.sorting).length) {
+        collection = _.orderBy(collection, Object.keys(this.sorting), Object.values(this.sorting));
+      }
+
       return collection;
     },
     numOfPages() {
@@ -182,6 +236,20 @@ export default {
         default:
           this.currentPage = page;
           break;
+      }
+    },
+    hideBackground(event) {
+      event.target.className  = 'clicked';
+    },
+    showBackground(event) {
+      event.target.className  = '';
+    },
+    toggleSort(field, order) {
+      if (this.sorting[field] === order) {
+        // delete this.sorting[field];
+        this.$delete(this.sorting, field);
+      } else {
+        this.$set(this.sorting, field, order);
       }
     }
   }
@@ -254,6 +322,17 @@ export default {
       outline: none;
       overflow: hidden;
     }
+
+    input {
+      background-image: url("../assets/search.png");
+      background-repeat: no-repeat;
+      background-position: top right;
+      background-size: contain;
+
+      &.clicked {
+        background-image: none;
+      }
+    }
   }
 
   .header {
@@ -262,12 +341,40 @@ export default {
 
     .cell {
       border-top: 0;
+      position: relative;
 
       &.center {
         align-content: center;
         justify-content: center;
         text-align: center;
         align-items: center;
+      }
+
+      & span {
+        display: block;
+        font-size: 13px;
+        color: #DCDCDC;
+        cursor: pointer;
+        position: absolute;
+        right: 0;
+
+        &:hover {
+          color: inherit;
+        }
+
+        &.asc {
+          transform: rotate(-90deg);
+          top: 4px;
+        }
+
+        &.desc {
+          transform: rotate(90deg);
+          top: 15px;
+        }
+
+        &.active {
+          color: #7A80DE;
+        }
       }
     }
   }
